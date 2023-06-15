@@ -10,12 +10,11 @@ class MoviesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<MoviesBloc>(context);
     return BlocBuilder(
-      bloc: BlocProvider.of<MoviesBloc>(context),
-      builder: (context, state) {
-        final currentState = (state as MoviesListState);
-        final bloc = BlocProvider.of<MoviesBloc>(context);
-        return Scaffold(
+        bloc: bloc,
+        builder: (context, state) => state is MoviesListState ?
+        Scaffold(
           backgroundColor: const Color(0x4949B356),
           body: CustomScrollView(
             slivers: <Widget>[
@@ -25,9 +24,9 @@ class MoviesPage extends StatelessWidget {
                 flexibleSpace: FlexibleSpaceBar(
                   background: RepaintBoundary(
                     child: Center(
-                      child: currentState.headerImage.isEmpty
+                      child: state.headerImage.isEmpty
                           ? const Center(child: CircularProgressIndicator())
-                          : HeaderImageView(imageUrl: currentState.headerImage),
+                          : HeaderImageView(imageUrl: state.headerImage),
                     ),
                   ),
                 ),
@@ -39,25 +38,25 @@ class MoviesPage extends StatelessWidget {
                       key: const ValueKey("latest"),
                       title: "Latest movies",
                       initiallyExpanded: true,
-                      movies: currentState.latestMovies,
+                      movies: state.latestMovies,
                       // callback: () => togglePeriodicFetch(),
                     ),
                     MainExpansionSection(
                       key: const ValueKey("popular"),
                       title: "Popular movies",
                       initiallyExpanded: true,
-                      movies: currentState.popularMovies,
+                      movies: state.popularMovies,
                     ),
                     MainExpansionSection(
                       key: const ValueKey("top"),
                       title: "Top Rated movies",
-                      movies: currentState.topRatedMovies,
+                      movies: state.topRatedMovies,
                       callback: () => bloc.add(TopRatedEvent()),
                     ),
                     MainExpansionSection(
                       key: const ValueKey("upcoming"),
                       title: "Upcoming movies",
-                      movies: currentState.upcomingMovies,
+                      movies: state.upcomingMovies,
                       callback: () => bloc.add(UpcomingEvent()),
                     ),
                   ],
@@ -66,8 +65,7 @@ class MoviesPage extends StatelessWidget {
               SliverToBoxAdapter(child: SizedBox(height: MediaQuery.of(context).padding.bottom))
             ],
           ),
-        );
-      },
+        ) : state is MoviesErrorState ? const Text("Movie Exception Error Handled", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),) : const Center(child: CircularProgressIndicator())
     );
   }
 }

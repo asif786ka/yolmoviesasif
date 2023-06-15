@@ -4,6 +4,11 @@ abstract class MoviesState extends Equatable {
   const MoviesState();
 }
 
+class MoviesErrorState extends MoviesState {
+  @override
+  List<Object?> get props => [];
+}
+
 class MoviesListState extends MoviesState {
   final String headerImage;
   final List<MoviesResultModel> latestMovies;
